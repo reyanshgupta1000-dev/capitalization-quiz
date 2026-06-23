@@ -1,30 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Firebase Check</title>
+  <title>Multiplayer Quiz</title>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
+    button { padding: 10px; margin: 5px; }
+    input { padding: 8px; margin: 5px; }
+  </style>
 </head>
 <body>
 
-<h1>Firebase Loading...</h1>
+<h1>Capitalization Quiz (Multiplayer)</h1>
+
+<div id="setup">
+  <input id="name" placeholder="Enter your name">
+  <input id="room" placeholder="Room code (create or join)">
+  <br>
+  <button onclick="joinRoom()">Join Game</button>
+</div>
+
+<div id="game" style="display:none;">
+  <h2 id="q"></h2>
+  <button onclick="answer(1)" id="a1"></button>
+  <button onclick="answer(0)" id="a2"></button>
+  <p id="status"></p>
+</div>
 
 <script type="module">
-  // 🔥 PASTE YOUR FIREBASE CONFIG HERE
+  // 🔥 YOUR FIREBASE CONFIG HERE
   const firebaseConfig = {
     apiKey: "PASTE_HERE",
     authDomain: "PASTE_HERE",
     projectId: "PASTE_HERE",
     storageBucket: "PASTE_HERE",
     messagingSenderId: "PASTE_HERE",
-    appId: "PASTE_HERE"
+    appId: "PASTE_HERE",
+    databaseURL: "PASTE_HERE"
   };
 
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, update } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
   const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-  document.body.innerHTML += "<h2>Firebase Connected ✔</h2>";
+  let playerName = "";
+  let roomCode = "";
+  let qIndex = 0;
 
-  console.log("Firebase working", app);
+  const questions = [
+    {q:"Which is correct?", a1:"My name is John.", a2:"my name is john.", correct:1},
+    {q:"Which is correct?", a1:"We live in New York.", a2:"We live in new york.", correct:1},
+    {q:"Which is correct?", a1:"i like pizza.", a2:"I like pizza.", correct:1}
+  ];
+
+  window.joinRoom = async function() {
+    playerName = document.getElementById("name").value;
+    roomCode = document.getElementById("room").value;
+
+    if (!playerName || !roomCode) return alert("Enter name + room");
+
+    const playerRef = ref(db, `rooms/${roomCode}/players/${playerName}`);
+    await set(playerRef, {score:0});
+
+    document.getElementById("setup").style.display = "none";
+    document.getElementById("game").style.display = "block";
+
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    const q = questions[qIndex];
+
+    document.getElementById("q").innerText = q.q;
+    document.getElementById("a1").innerText = q.a1;
+    document.getElementById("a2").innerText = q.a2;
+
+    document.getElementById("status").innerText = "Question " + (qIndex+1);
+  }
+
+  window.answer = async function(choice) {
+    const q = questions[qIndex];
+
+    if (choice === q.correct) {
+      const playerRef = ref(db, `rooms/${roomCode}/players/${playerName}`);
+      const snap = await get(playerRef);
+
+      let score = snap.val().score;
+      await update(playerRef, {score: score + 1});
+    }
+
+    qIndex++;
+
+    if (qIndex >= questions.length) {
+      document.getElementById("q").innerText = "Game Over!";
+      document.getElementById("a1").style.display = "none";
+      document.getElementById("a2").style.display = "none";
+      return;
+    }
+
+    loadQuestion();
+  }
 </script>
 
 </body>
