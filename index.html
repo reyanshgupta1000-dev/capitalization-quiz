@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Capitalization Multiplayer Quiz</title>
@@ -12,28 +12,13 @@
       text-align: center;
     }
 
-    .topbar {
-      position: fixed;
-      top: 10px;
-      right: 15px;
-      background: black;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding-top: 60px;
-    }
-
     .card {
       background: white;
       color: black;
+      margin: 15px auto;
       padding: 20px;
-      border-radius: 16px;
-      margin: 15px 0;
+      max-width: 850px;
+      border-radius: 12px;
     }
 
     input, button {
@@ -56,82 +41,75 @@
       display: block;
       width: 80%;
       margin: 10px auto;
-      background: #f3f4f6;
       color: black;
     }
 
-    #leaderboardCard { display: none; }
+    #leaderboard { display: none; }
 
     #timer {
-      font-size: 26px;
+      font-size: 24px;
       color: red;
-      font-weight: bold;
     }
 
-    #questionCounter {
-      font-size: 18px;
-      margin-bottom: 10px;
+    #topbar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: black;
+      padding: 8px;
+      border-radius: 8px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  Room: <span id="roomDisplay">---</span>
+<div id="topbar">Room: <span id="roomDisplay">---</span></div>
+
+<h1>🔥 Capitalization Multiplayer Quiz</h1>
+
+<!-- ================= SETUP ================= -->
+<div id="setup" class="card">
+  <input id="name" placeholder="Your name">
+  <input id="room" placeholder="Room code">
+  <br>
+  <button onclick="createGame()">Create Game</button>
+  <button onclick="joinGame()">Join Game</button>
 </div>
 
-<div class="container">
+<!-- ================= LOBBY ================= -->
+<div id="lobby" class="card" style="display:none;">
+  <h2>Lobby</h2>
+  <button id="startBtn" onclick="startGame()" style="display:none;">Start Game</button>
+  <div id="players"></div>
+</div>
 
-  <h1>🔥 Capitalization Multiplayer Quiz</h1>
+<!-- ================= GAME ================= -->
+<div id="game">
 
-  <!-- SETUP -->
-  <div id="setup" class="card">
-    <h2>Join / Create Game</h2>
-    <input id="name" placeholder="Your name">
-    <input id="room" placeholder="Room code">
-    <br>
-    <button onclick="createGame()">Create Game (Host)</button>
-    <button onclick="joinRoom()">Join Game</button>
+  <div class="card">
+    <div id="qNum"></div>
+    <div id="timer">20</div>
+    <h2 id="question"></h2>
+
+    <button class="answer" onclick="answer(0)" id="a1"></button>
+    <button class="answer" onclick="answer(1)" id="a2"></button>
   </div>
 
-  <!-- LOBBY -->
-  <div id="lobby" class="card" style="display:none;">
-    <h2>Lobby</h2>
-    <button id="startBtn" onclick="startGame()" style="display:none;">
-      Start Game (Host Only)
-    </button>
-    <div id="players"></div>
-  </div>
-
-  <!-- GAME -->
-  <div id="game">
-
-    <div class="card">
-      <div id="questionCounter"></div>
-      <div id="timer">20</div>
-      <h2 id="question"></h2>
-
-      <button class="answer" onclick="answer(0)" id="a1"></button>
-      <button class="answer" onclick="answer(1)" id="a2"></button>
-    </div>
-
-    <div class="card" id="leaderboardCard">
-      <h3>Leaderboard</h3>
-      <div id="board"></div>
-    </div>
-
+  <div class="card" id="leaderboard">
+    <h3>Leaderboard</h3>
+    <div id="board"></div>
   </div>
 
 </div>
 
+<!-- ================= FIREBASE ================= -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set, get, update, onValue }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -145,7 +123,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* QUESTIONS */
+/* ================= QUESTIONS ================= */
 const questions = [
   ["i went to london", "I went to London"],
   ["my name is alex", "My name is Alex"],
@@ -160,27 +138,27 @@ const questions = [
   ["we study english", "We study English"],
   ["she is smart", "She is smart"],
   ["my brother is tall", "My brother is tall"],
-  ["i play soccer", "I play soccer"],
+  ["i play soccer", "I play Soccer"],
   ["we are learning grammar", "We are learning grammar"]
 ];
 
 let playerName = "";
 let roomCode = "";
-let hostName = "";
-let questionIndex = 0;
-let correctAnswer = 0;
+let host = "";
+let index = 0;
+let correct = 0;
 let timer;
 
-/* CREATE GAME */
+/* ================= CREATE ================= */
 window.createGame = async function () {
-  playerName = document.getElementById("name").value;
-  roomCode = document.getElementById("room").value;
-  hostName = playerName;
+  playerName = name.value;
+  roomCode = room.value;
+  host = playerName;
 
-  await set(ref(db, `rooms/${roomCode}`), {
-    host: playerName,
+  await set(ref(db, "rooms/" + roomCode), {
+    host,
     state: "lobby",
-    questionIndex: 0
+    index: 0
   });
 
   await set(ref(db, `rooms/${roomCode}/players/${playerName}`), {
@@ -190,15 +168,15 @@ window.createGame = async function () {
   enterLobby();
 };
 
-/* JOIN GAME */
-window.joinRoom = async function () {
-  playerName = document.getElementById("name").value;
-  roomCode = document.getElementById("room").value;
+/* ================= JOIN ================= */
+window.joinGame = async function () {
+  playerName = name.value;
+  roomCode = room.value;
 
-  const snap = await get(ref(db, `rooms/${roomCode}`));
+  const snap = await get(ref(db, "rooms/" + roomCode));
   if (!snap.exists()) return alert("Room not found");
 
-  hostName = snap.val().host;
+  host = snap.val().host;
 
   await set(ref(db, `rooms/${roomCode}/players/${playerName}`), {
     score: 0
@@ -207,83 +185,73 @@ window.joinRoom = async function () {
   enterLobby();
 };
 
-/* LOBBY */
+/* ================= LOBBY ================= */
 function enterLobby() {
-  document.getElementById("setup").style.display = "none";
-  document.getElementById("lobby").style.display = "block";
-  document.getElementById("roomDisplay").innerText = roomCode;
+  setup.style.display = "none";
+  lobby.style.display = "block";
+  roomDisplay.innerText = roomCode;
 
-  if (playerName === hostName) {
-    document.getElementById("startBtn").style.display = "block";
-  }
+  if (playerName === host) startBtn.style.display = "block";
 
   listenPlayers();
   listenRoom();
 }
 
-/* PLAYERS */
+/* ================= PLAYERS ================= */
 function listenPlayers() {
-  onValue(ref(db, `rooms/${roomCode}/players`), (snap) => {
+  onValue(ref(db, `rooms/${roomCode}/players`), snap => {
     const data = snap.val() || {};
-    let html = "";
-
-    for (let p in data) {
-      html += `<p><b>${p}</b>: ${data[p].score}</p>`;
-    }
-
-    document.getElementById("players").innerHTML = html;
+    players.innerHTML = Object.keys(data)
+      .map(p => `<p>${p}: ${data[p].score}</p>`)
+      .join("");
   });
 }
 
-/* ROOM */
+/* ================= ROOM ================= */
 function listenRoom() {
-  onValue(ref(db, `rooms/${roomCode}`), (snap) => {
+  onValue(ref(db, `rooms/${roomCode}`), snap => {
     const data = snap.val();
     if (!data) return;
 
     if (data.state === "playing") {
-      document.getElementById("lobby").style.display = "none";
-      document.getElementById("game").style.display = "block";
+      lobby.style.display = "none";
+      game.style.display = "block";
 
-      questionIndex = data.questionIndex || 0;
-      loadQuestion();
+      index = data.index || 0;
+      load();
     }
   });
 }
 
-/* START GAME */
+/* ================= START ================= */
 window.startGame = async function () {
-  if (playerName !== hostName) return;
+  if (playerName !== host) return;
 
-  await update(ref(db, `rooms/${roomCode}`), {
+  await update(ref(db, "rooms/" + roomCode), {
     state: "playing",
-    questionIndex: 0
+    index: 0
   });
 
-  loadQuestion();
+  load();
 };
 
-/* LOAD QUESTION */
-function loadQuestion() {
-  const q = questions[questionIndex];
+/* ================= LOAD QUESTION ================= */
+function load() {
+  const q = questions[index];
 
-  correctAnswer = Math.random() < 0.5 ? 0 : 1;
+  correct = Math.random() < 0.5 ? 0 : 1;
 
-  const options = correctAnswer === 0
-    ? [q[1], q[0]]
-    : [q[0], q[1]];
+  const opts = correct === 0 ? [q[1], q[0]] : [q[0], q[1]];
 
-  document.getElementById("questionCounter").innerText =
-    `Question ${questionIndex + 1} / ${questions.length}`;
-
-  document.getElementById("question").innerText = "Which is correct?";
-  document.getElementById("a1").innerText = options[0];
-  document.getElementById("a2").innerText = options[1];
+  qNum.innerText = `Question ${index + 1} / ${questions.length}`;
+  question.innerText = "Which is correct?";
+  a1.innerText = opts[0];
+  a2.innerText = opts[1];
 
   startTimer();
 }
 
-/* TIMER */
+/* ================= TIMER ================= */
 function startTimer() {
   clearInterval(timer);
   let t = 20;
@@ -291,58 +259,54 @@ function startTimer() {
   timer = setInterval(() => {
     t--;
     document.getElementById("timer").innerText = t;
-    if (t <= 0) showLeaderboard();
+    if (t <= 0) showBoard();
   }, 1000);
 }
 
-/* ANSWER */
+/* ================= ANSWER ================= */
 window.answer = async function (choice) {
-  const playerRef = ref(db, `rooms/${roomCode}/players/${playerName}`);
-  const snap = await get(playerRef);
+  const refP = ref(db, `rooms/${roomCode}/players/${playerName}`);
+  const snap = await get(refP);
   let score = snap.val().score;
 
-  if (choice === correctAnswer) {
-    await update(playerRef, { score: score + 1 });
+  if (choice === correct) {
+    await update(refP, { score: score + 1 });
   }
 
   await set(ref(db, `rooms/${roomCode}/answers/${playerName}`), true);
 
-  checkAllAnswered();
+  checkAll();
 };
 
-/* CHECK ALL ANSWERED */
-async function checkAllAnswered() {
-  const playersSnap = await get(ref(db, `rooms/${roomCode}/players`));
-  const answersSnap = await get(ref(db, `rooms/${roomCode}/answers`));
+/* ================= CHECK ALL ================= */
+async function checkAll() {
+  const p = await get(ref(db, `rooms/${roomCode}/players`));
+  const a = await get(ref(db, `rooms/${roomCode}/answers`));
 
-  const players = playersSnap.val() || {};
-  const answers = answersSnap.val() || {};
-
-  if (Object.keys(answers).length >= Object.keys(players).length) {
-    showLeaderboard();
+  if (Object.keys(a.val() || {}).length >= Object.keys(p.val() || {}).length) {
+    showBoard();
   }
 }
 
-/* LEADERBOARD */
-async function showLeaderboard() {
+/* ================= LEADERBOARD ================= */
+async function showBoard() {
   const snap = await get(ref(db, `rooms/${roomCode}/players`));
   const data = snap.val();
 
-  let html = "";
-
-  Object.keys(data)
+  board.innerHTML = Object.keys(data)
     .sort((a,b) => data[b].score - data[a].score)
-    .forEach(p => {
-      html += `<p><b>${p}</b>: ${data[p].score}</p>`;
-    });
+    .map(p => `<p>${p}: ${data[p].score}</p>`)
+    .join("");
 
-  document.getElementById("board").innerHTML = html;
-  document.getElementById("leaderboardCard").style.display = "block";
+  leaderboard.style.display = "block";
 
   setTimeout(() => {
-    document.getElementById("leaderboardCard").style.display = "none";
-    questionIndex++;
-    loadQuestion();
+    leaderboard.style.display = "none";
+    index++;
+
+    update(ref(db, "rooms/" + roomCode), { index });
+
+    load();
   }, 3000);
 }
 
