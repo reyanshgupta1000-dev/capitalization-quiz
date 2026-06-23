@@ -86,62 +86,45 @@
 
   <h1>🔥 Capitalization Battle Pro</h1>
 
-  <!-- 📘 FULL ENGLISH REQUIREMENTS -->
+  <!-- 📘 ENGLISH REQUIREMENTS (UPDATED - RULES REMOVED AS REQUESTED) -->
   <div class="card">
     <h2>📘 English Assignment Requirements</h2>
 
     <p><b>Grammar Skill:</b> Capitalization</p>
 
-    <p><b>What the game teaches:</b><br>
-    This game teaches how to correctly use capital letters in English sentences, including names, places, and sentence beginnings.</p>
-
-    <p><b>Why this skill matters:</b><br>
-    Capitalization is important because it makes writing clear, readable, and professional. Without it, sentences can be confusing or look incorrect even if the ideas are correct.</p>
-
-    <p><b>Learning goal:</b><br>
-    To help students recognize and apply capitalization rules automatically while writing.</p>
-
-    <p><b>Rules of the game:</b></p>
-    <ul style="text-align:left;">
-      <li>Players join using a room code</li>
-      <li>Host starts the game</li>
-      <li>Each correct answer = 1 point</li>
-      <li>Wrong answers = 0 points (no penalty)</li>
-      <li>Highest score at the end wins</li>
-    </ul>
+    <p><b>Learning Goal:</b> Learn correct use of capital letters in sentences, names, and places.</p>
 
     <p><b>What happens if you make a mistake?</b><br>
-    You do not lose points, but you miss the chance to increase your score.</p>
+    You don’t lose points, but you miss scoring opportunities.</p>
 
     <p><b>How to win:</b><br>
-    The player with the highest total score after all 15 questions wins the game.</p>
+    The player with the highest score after all questions wins the game.</p>
 
-    <p><b>Time:</b> 10–20 minutes</p>
-    <p><b>Practice:</b> 15+ capitalization questions included</p>
+    <p><b>Time:</b> 10–20 minutes gameplay</p>
+    <p><b>Includes:</b> 15+ capitalization practice questions</p>
   </div>
 
-  <!-- 📝 REFLECTION (FULL RUBRIC COVERED) -->
+  <!-- REFLECTION -->
   <div class="card">
-    <h2>📝 Reflection Letter (To Future Students)</h2>
+    <h2>📝 Reflection Letter</h2>
 
     <p>
-      This game is designed to help you practice capitalization, which is an important grammar skill in English writing.
-      It helps you understand when to use capital letters in sentences, names of people, and places.
+      This game helps you practice capitalization, which is an important grammar skill in English writing.
+      Capitalization makes writing clearer, more correct, and more professional.
     </p>
 
     <p>
-      I think this skill is important because writing without correct capitalization can look unprofessional or confusing,
-      even if the ideas are correct. Using capital letters properly helps readers understand your writing more easily.
+      This skill is important because without it, writing can be confusing even if the ideas are good.
+      It helps readers understand where sentences begin and which words are important.
     </p>
 
     <p>
-      My advice is to always check the first word of every sentence and make sure names of people, cities, and countries
-      are capitalized. One thing I wish I knew earlier is that small mistakes in capitalization can still affect your grade.
+      My advice is to always slow down and check the first letter of sentences, names of people,
+      cities, and countries. One thing I wish I knew earlier is that small capitalization mistakes can still affect grades.
     </p>
 
     <p>
-      A good tip for mastering this skill is to practice while reading — try noticing capital letters in books or articles
-      so it becomes natural when you write.
+      A good tip is to practice spotting capital letters while reading so it becomes automatic when writing.
     </p>
   </div>
 
@@ -205,7 +188,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* 15+ QUESTIONS */
+/* QUESTIONS */
 const questions = [
   { q: "Which is correct?", a1: "i went to london", a2: "I went to London", correct: 1 },
   { q: "Which is correct?", a1: "my name is alex", a2: "My name is Alex", correct: 1 },
@@ -315,7 +298,7 @@ window.startGame = async function () {
   });
 };
 
-/* QUESTION */
+/* GAME LOGIC */
 function loadQuestion() {
   const q = questions[qIndex];
 
@@ -326,7 +309,6 @@ function loadQuestion() {
   startTimer();
 }
 
-/* TIMER */
 function startTimer() {
   clearInterval(timer);
   let t = 20;
@@ -338,7 +320,6 @@ function startTimer() {
   }, 1000);
 }
 
-/* ANSWER */
 window.answer = async function (choice) {
   const q = questions[qIndex];
 
@@ -352,7 +333,6 @@ window.answer = async function (choice) {
   nextQuestion();
 };
 
-/* NEXT */
 function nextQuestion() {
   document.getElementById("leaderboardCard").style.display = "block";
 
