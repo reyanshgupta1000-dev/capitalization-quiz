@@ -1,90 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Capitalization Multiplayer Quiz</title>
+  <title>Capitalization Battle Pro</title>
 
   <style>
     body {
+      margin: 0;
       font-family: Arial;
-      max-width: 850px;
-      margin: auto;
-      padding: 20px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: white;
       text-align: center;
     }
 
-    button { padding: 10px; margin: 5px; }
-    input { padding: 8px; margin: 5px; }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      color: black;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 40%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 12px 18px;
+      margin: 6px;
+      border: none;
+      border-radius: 10px;
+      background: #4f46e5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3730a3;
+    }
 
     #game { display: none; }
 
-    .box {
-      background: #f3f3f3;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      text-align: left;
-    }
-
-    #leaderboard {
-      margin-top: 15px;
-      text-align: left;
-      background: #e9f5ff;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
     #timer {
-      font-size: 22px;
-      color: red;
+      font-size: 28px;
       font-weight: bold;
+      color: red;
+    }
+
+    .answer {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      background: #f3f4f6;
+      color: black;
+    }
+
+    .answer:hover {
+      background: #e5e7eb;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
 
-<h1>🔥 Capitalization Multiplayer Quiz</h1>
+<div class="container">
 
-<div class="box">
-  <h2>Rules</h2>
-  <p>Choose the correctly capitalized sentence.</p>
-  <p>Correct answer = 1 point. Wrong answer = 0 points.</p>
-  <p>Highest score wins the game.</p>
-  <p>Game lasts about 10–20 minutes.</p>
-</div>
+  <div class="title">🔥 Capitalization Battle Pro</div>
 
-<!-- SETUP -->
-<div id="setup">
-  <input id="name" placeholder="Your name">
-  <input id="room" placeholder="Room code">
-  <button onclick="joinRoom()">Join Game</button>
-</div>
+  <!-- RULES -->
+  <div class="card">
+    <h2>Rules (Read Carefully)</h2>
+    <p>1. Join a room using a code.</p>
+    <p>2. Answer capitalization questions correctly.</p>
+    <p>3. Each correct answer = 1 point.</p>
+    <p>4. Wrong answers = no points.</p>
+    <p>5. If you make a mistake, you do not lose points — you just don’t earn one.</p>
+    <p>6. The player with the highest score wins.</p>
+    <p>7. Game lasts about 10–20 minutes total.</p>
+  </div>
 
-<!-- GAME -->
-<div id="game">
+  <!-- LEARNING GOAL -->
+  <div class="card">
+    <h2>What This Game Teaches</h2>
+    <p>This game teaches capitalization rules in English grammar.</p>
+    <p>You learn to capitalize names, places, and the first word in sentences.</p>
+  </div>
 
-  <div id="timer">20</div>
+  <!-- REFLECTION (REQUIRED) -->
+  <div class="card">
+    <h2>Reflection Letter</h2>
+    <p>
+      This game helps you practice capitalization, which is an important grammar skill.
+      Capitalization makes writing clearer, more professional, and easier to understand.
+    </p>
+    <p>
+      It is important because without correct capitalization, writing can look confusing or incorrect.
+      I used to forget capital letters often, but this game helps train your brain to notice them.
+    </p>
+    <p>
+      My advice is to slow down when writing and always check the first letter of sentences,
+      names of people, places, and countries. One thing I wish I knew earlier is that small capitalization
+      mistakes can make writing look less serious even if the ideas are good.
+    </p>
+  </div>
 
-  <h2 id="question"></h2>
+  <!-- SETUP -->
+  <div id="setup" class="card">
+    <h2>Join Multiplayer Game</h2>
+    <input id="name" placeholder="Your name">
+    <input id="room" placeholder="Room code">
+    <br>
+    <button onclick="joinRoom()">Join Game</button>
+  </div>
 
-  <button onclick="answer(0)" id="a1"></button>
-  <button onclick="answer(1)" id="a2"></button>
+  <!-- GAME -->
+  <div id="game">
 
-  <div id="leaderboard">
-    <h3>Leaderboard</h3>
-    <div id="board"></div>
+    <div class="card">
+      <div id="timer">20</div>
+      <h2 id="question"></h2>
+
+      <button class="answer" onclick="answer(0)" id="a1"></button>
+      <button class="answer" onclick="answer(1)" id="a2"></button>
+    </div>
+
+    <div class="card">
+      <h3>Leaderboard</h3>
+      <div id="board"></div>
+    </div>
+
   </div>
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set, get, update, onValue }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-/* ✅ FIXED FIREBASE CONFIG */
+/* 🔥 YOUR FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -98,7 +170,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* QUESTIONS */
+/* 15+ QUESTIONS */
 const questions = [
   { q: "Which is correct?", a1: "i went to london", a2: "I went to London", correct: 1 },
   { q: "Which is correct?", a1: "my name is alex", a2: "My name is Alex", correct: 1 },
@@ -108,11 +180,11 @@ const questions = [
   { q: "Which is correct?", a1: "we went to paris", a2: "We went to Paris", correct: 1 },
   { q: "Which is correct?", a1: "she lives in canada", a2: "She lives in Canada", correct: 1 },
   { q: "Which is correct?", a1: "i love school", a2: "I love school", correct: 1 },
-  { q: "Which is correct?", a1: "we are going to texas", a2: "We are going to Texas", correct: 1 },
+  { q: "Which is correct?", a1: "we study english", a2: "We study English", correct: 1 },
   { q: "Which is correct?", a1: "he is my friend", a2: "He is my friend", correct: 1 },
   { q: "Which is correct?", a1: "they live in florida", a2: "They live in Florida", correct: 1 },
   { q: "Which is correct?", a1: "she is smart", a2: "She is smart", correct: 1 },
-  { q: "Which is correct?", a1: "we study english", a2: "We study English", correct: 1 },
+  { q: "Which is correct?", a1: "we are learning grammar", a2: "We are learning grammar", correct: 1 },
   { q: "Which is correct?", a1: "my brother is tall", a2: "My brother is tall", correct: 1 },
   { q: "Which is correct?", a1: "i play soccer", a2: "I play soccer", correct: 1 }
 ];
@@ -127,8 +199,6 @@ let timer;
 window.joinRoom = async function () {
   playerName = document.getElementById("name").value;
   roomCode = document.getElementById("room").value;
-
-  if (!playerName || !roomCode) return alert("Enter name and room code");
 
   await set(ref(db, `rooms/${roomCode}/players/${playerName}`), {
     score: 0
@@ -173,9 +243,7 @@ window.answer = async function (choice) {
   if (choice === q.correct) {
     const playerRef = ref(db, `rooms/${roomCode}/players/${playerName}`);
     const snap = await get(playerRef);
-
     let score = snap.val()?.score || 0;
-
     await update(playerRef, { score: score + 1 });
   }
 
@@ -188,7 +256,7 @@ function nextQuestion() {
 
   if (qIndex >= questions.length) {
     document.getElementById("game").innerHTML =
-      "<h2>🎉 Game Over!</h2><p>Check leaderboard for winner!</p>";
+      "<div class='card'><h2>🎉 Game Over!</h2><p>Check leaderboard for winner!</p></div>";
     return;
   }
 
