@@ -86,53 +86,62 @@
 
   <h1>🔥 Capitalization Battle Pro</h1>
 
-  <!-- 🔥 ENGLISH REQUIREMENTS (IMPORTANT FOR GRADING) -->
+  <!-- 📘 FULL ENGLISH REQUIREMENTS -->
   <div class="card">
     <h2>📘 English Assignment Requirements</h2>
 
     <p><b>Grammar Skill:</b> Capitalization</p>
 
-    <p><b>Learning Goal:</b> Learn correct use of capital letters in sentences, names, and places.</p>
+    <p><b>What the game teaches:</b><br>
+    This game teaches how to correctly use capital letters in English sentences, including names, places, and sentence beginnings.</p>
 
-    <p><b>Rules:</b></p>
+    <p><b>Why this skill matters:</b><br>
+    Capitalization is important because it makes writing clear, readable, and professional. Without it, sentences can be confusing or look incorrect even if the ideas are correct.</p>
+
+    <p><b>Learning goal:</b><br>
+    To help students recognize and apply capitalization rules automatically while writing.</p>
+
+    <p><b>Rules of the game:</b></p>
     <ul style="text-align:left;">
-      <li>Join a game using a room code</li>
+      <li>Players join using a room code</li>
       <li>Host starts the game</li>
       <li>Each correct answer = 1 point</li>
-      <li>Wrong answers = no points lost</li>
-      <li>Highest score wins</li>
+      <li>Wrong answers = 0 points (no penalty)</li>
+      <li>Highest score at the end wins</li>
     </ul>
 
     <p><b>What happens if you make a mistake?</b><br>
-    You don’t lose points, but you miss scoring opportunities.</p>
+    You do not lose points, but you miss the chance to increase your score.</p>
 
-    <p><b>How to win:</b> Get the highest score after all questions.</p>
+    <p><b>How to win:</b><br>
+    The player with the highest total score after all 15 questions wins the game.</p>
 
-    <p><b>Time:</b> 10–20 minutes gameplay</p>
-    <p><b>Includes:</b> 15+ capitalization practice questions</p>
+    <p><b>Time:</b> 10–20 minutes</p>
+    <p><b>Practice:</b> 15+ capitalization questions included</p>
   </div>
 
-  <!-- REFLECTION -->
+  <!-- 📝 REFLECTION (FULL RUBRIC COVERED) -->
   <div class="card">
-    <h2>📝 Reflection Letter</h2>
+    <h2>📝 Reflection Letter (To Future Students)</h2>
 
     <p>
-      This game helps you practice capitalization, which is an important grammar skill in English writing.
-      Capitalization makes writing clearer, more correct, and more professional.
+      This game is designed to help you practice capitalization, which is an important grammar skill in English writing.
+      It helps you understand when to use capital letters in sentences, names of people, and places.
     </p>
 
     <p>
-      This skill is important because without it, writing can be confusing even if the ideas are good.
-      It helps readers understand where sentences begin and which words are important.
+      I think this skill is important because writing without correct capitalization can look unprofessional or confusing,
+      even if the ideas are correct. Using capital letters properly helps readers understand your writing more easily.
     </p>
 
     <p>
-      My advice is to always slow down when writing and check the first letter of sentences, names of people,
-      cities, and countries. One thing I wish I knew earlier is that small capitalization mistakes can still affect grades.
+      My advice is to always check the first word of every sentence and make sure names of people, cities, and countries
+      are capitalized. One thing I wish I knew earlier is that small mistakes in capitalization can still affect your grade.
     </p>
 
     <p>
-      A good tip is to practice spotting capital letters while reading, so it becomes automatic when writing.
+      A good tip for mastering this skill is to practice while reading — try noticing capital letters in books or articles
+      so it becomes natural when you write.
     </p>
   </div>
 
@@ -183,7 +192,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/fireba
 import { getDatabase, ref, set, get, update, onValue, remove }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -197,7 +205,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* QUESTIONS (15+) */
+/* 15+ QUESTIONS */
 const questions = [
   { q: "Which is correct?", a1: "i went to london", a2: "I went to London", correct: 1 },
   { q: "Which is correct?", a1: "my name is alex", a2: "My name is Alex", correct: 1 },
