@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Capitalization Battle Pro</title>
+  <title>Capitalization Battle (Final Submission)</title>
 
   <style>
     body {
@@ -12,38 +12,42 @@
       text-align: center;
     }
 
+    .topbar {
+      position: fixed;
+      top: 10px;
+      right: 15px;
+      background: black;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
     .container {
       max-width: 900px;
       margin: auto;
-      padding: 20px;
+      padding-top: 60px;
     }
 
     .card {
       background: white;
       color: black;
-      border-radius: 16px;
       padding: 20px;
+      border-radius: 16px;
       margin: 15px 0;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
     }
 
-    input {
+    input, button {
       padding: 10px;
       margin: 5px;
-      width: 40%;
       border-radius: 8px;
-      border: 1px solid #ccc;
     }
 
     button {
-      padding: 12px 18px;
-      margin: 6px;
-      border: none;
-      border-radius: 10px;
       background: #4f46e5;
       color: white;
-      font-weight: bold;
+      border: none;
       cursor: pointer;
+      font-weight: bold;
     }
 
     button:hover {
@@ -51,12 +55,6 @@
     }
 
     #game { display: none; }
-
-    #timer {
-      font-size: 28px;
-      font-weight: bold;
-      color: red;
-    }
 
     .answer {
       display: block;
@@ -66,58 +64,73 @@
       color: black;
     }
 
-    .answer:hover {
-      background: #e5e7eb;
+    #leaderboardCard {
+      display: none;
     }
 
-    .title {
-      font-size: 34px;
+    #timer {
+      font-size: 26px;
+      color: red;
       font-weight: bold;
-      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
 
+<div class="topbar">
+  Room: <span id="roomDisplay">---</span>
+</div>
+
 <div class="container">
 
-  <div class="title">🔥 Capitalization Battle Pro</div>
+  <h1>🔥 Capitalization Battle Pro</h1>
 
-  <!-- RULES -->
+  <!-- RULES (REQUIREMENT EXPLICIT) -->
   <div class="card">
-    <h2>Rules (Read Carefully)</h2>
-    <p>1. Join a room using a code.</p>
-    <p>2. Answer capitalization questions correctly.</p>
-    <p>3. Each correct answer = 1 point.</p>
-    <p>4. Wrong answers = no points.</p>
-    <p>5. If you make a mistake, you do not lose points — you just don’t earn one.</p>
-    <p>6. The player with the highest score wins.</p>
-    <p>7. Game lasts about 10–20 minutes total.</p>
+    <h2>Game Rules (English Assignment Requirement)</h2>
+    <p><b>Grammar Skill:</b> Capitalization</p>
+    <p>Players join a room and answer grammar questions.</p>
+    <p>Each correct answer = +1 point.</p>
+    <p>Wrong answers = 0 points (no penalty, just no score).</p>
+    <p>Game is won by the highest score at the end.</p>
+    <p>If you make a mistake, you do NOT lose points, but you miss scoring opportunities.</p>
+    <p>This game lasts about 10–20 minutes.</p>
   </div>
 
   <!-- LEARNING GOAL -->
   <div class="card">
-    <h2>What This Game Teaches</h2>
-    <p>This game teaches capitalization rules in English grammar.</p>
-    <p>You learn to capitalize names, places, and the first word in sentences.</p>
+    <h2>What You Are Learning</h2>
+    <p>This game teaches capitalization rules in English writing.</p>
+    <p>You learn to capitalize:</p>
+    <p>- Names of people</p>
+    <p>- Places (cities, countries)</p>
+    <p>- The first word in a sentence</p>
   </div>
 
-  <!-- REFLECTION (REQUIRED) -->
+  <!-- REFLECTION (FULL REQUIREMENT) -->
   <div class="card">
-    <h2>Reflection Letter</h2>
+    <h2>Reflection Letter (To Future Students)</h2>
+
     <p>
-      This game helps you practice capitalization, which is an important grammar skill.
-      Capitalization makes writing clearer, more professional, and easier to understand.
+      This game is designed to help you practice capitalization, which is an important grammar skill in English.
+      Capitalization helps writing look clear, correct, and professional.
     </p>
+
     <p>
-      It is important because without correct capitalization, writing can look confusing or incorrect.
-      I used to forget capital letters often, but this game helps train your brain to notice them.
+      I think this skill is important because without it, sentences can be confusing or look incorrect even if the idea is good.
+      In school, writing with correct capitalization makes your work easier to understand and more professional.
     </p>
+
     <p>
-      My advice is to slow down when writing and always check the first letter of sentences,
-      names of people, places, and countries. One thing I wish I knew earlier is that small capitalization
-      mistakes can make writing look less serious even if the ideas are good.
+      My advice is to always slow down when writing and check the first letter of every sentence.
+      Also remember to capitalize names of people, countries, cities, and important places.
+      One thing I wish I knew earlier is that small capitalization mistakes can affect your grade even if everything else is correct.
+    </p>
+
+    <p>
+      Tip for mastering this skill: practice reading sentences and circling capital letters in your head before writing.
+      The more you practice, the more automatic it becomes.
     </p>
   </div>
 
@@ -127,6 +140,7 @@
     <input id="name" placeholder="Your name">
     <input id="room" placeholder="Room code">
     <br>
+    <button onclick="createGame()">Create Game (Host)</button>
     <button onclick="joinRoom()">Join Game</button>
   </div>
 
@@ -141,8 +155,8 @@
       <button class="answer" onclick="answer(1)" id="a2"></button>
     </div>
 
-    <div class="card">
-      <h3>Leaderboard</h3>
+    <div class="card" id="leaderboardCard">
+      <h3>Leaderboard (Shows after each question)</h3>
       <div id="board"></div>
     </div>
 
@@ -150,13 +164,13 @@
 
 </div>
 
+<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue }
+import { getDatabase, ref, set, get, update, onValue, remove }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-/* 🔥 YOUR FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -189,11 +203,24 @@ const questions = [
   { q: "Which is correct?", a1: "i play soccer", a2: "I play soccer", correct: 1 }
 ];
 
-let playerName = "";
-let roomCode = "";
+let playerName, roomCode, isHost = false;
 let qIndex = 0;
-let time = 20;
 let timer;
+
+/* CREATE */
+window.createGame = async function () {
+  playerName = document.getElementById("name").value;
+  roomCode = document.getElementById("room").value;
+  isHost = true;
+
+  await set(ref(db, `rooms/${roomCode}`), {
+    host: playerName,
+    state: "lobby",
+    current: 0
+  });
+
+  joinRoom();
+};
 
 /* JOIN */
 window.joinRoom = async function () {
@@ -205,66 +232,26 @@ window.joinRoom = async function () {
   });
 
   document.getElementById("setup").style.display = "none";
-  document.getElementById("game").style.display = "block";
+  document.getElementById("roomDisplay").innerText = roomCode;
 
-  loadQuestion();
-  listenLeaderboard();
-  startTimer();
+  listenRoom();
+  listenPlayers();
 };
 
-/* TIMER */
-function startTimer() {
-  clearInterval(timer);
-  time = 20;
+/* ROOM LISTENER */
+function listenRoom() {
+  onValue(ref(db, `rooms/${roomCode}`), (snap) => {
+    const data = snap.val();
 
-  timer = setInterval(() => {
-    time--;
-    document.getElementById("timer").innerText = time;
-
-    if (time <= 0) nextQuestion();
-  }, 1000);
+    if (data?.state === "playing") {
+      document.getElementById("game").style.display = "block";
+      loadQuestion();
+    }
+  });
 }
 
-/* LOAD QUESTION */
-function loadQuestion() {
-  const q = questions[qIndex];
-
-  document.getElementById("question").innerText = q.q;
-  document.getElementById("a1").innerText = q.a1;
-  document.getElementById("a2").innerText = q.a2;
-
-  startTimer();
-}
-
-/* ANSWER */
-window.answer = async function (choice) {
-  const q = questions[qIndex];
-
-  if (choice === q.correct) {
-    const playerRef = ref(db, `rooms/${roomCode}/players/${playerName}`);
-    const snap = await get(playerRef);
-    let score = snap.val()?.score || 0;
-    await update(playerRef, { score: score + 1 });
-  }
-
-  nextQuestion();
-};
-
-/* NEXT QUESTION */
-function nextQuestion() {
-  qIndex++;
-
-  if (qIndex >= questions.length) {
-    document.getElementById("game").innerHTML =
-      "<div class='card'><h2>🎉 Game Over!</h2><p>Check leaderboard for winner!</p></div>";
-    return;
-  }
-
-  loadQuestion();
-}
-
-/* LEADERBOARD */
-function listenLeaderboard() {
+/* PLAYERS */
+function listenPlayers() {
   onValue(ref(db, `rooms/${roomCode}/players`), (snap) => {
     const data = snap.val() || {};
     let html = "";
@@ -276,6 +263,69 @@ function listenLeaderboard() {
     document.getElementById("board").innerHTML = html;
   });
 }
+
+/* QUESTION */
+function loadQuestion() {
+  const q = questions[qIndex];
+
+  document.getElementById("question").innerText = q.q;
+  document.getElementById("a1").innerText = q.a1;
+  document.getElementById("a2").innerText = q.a2;
+
+  startTimer();
+}
+
+/* TIMER */
+function startTimer() {
+  clearInterval(timer);
+  let t = 20;
+
+  timer = setInterval(() => {
+    t--;
+    document.getElementById("timer").innerText = t;
+
+    if (t <= 0) nextQuestion();
+  }, 1000);
+}
+
+/* ANSWER */
+window.answer = async function (choice) {
+  const q = questions[qIndex];
+
+  if (choice === q.correct) {
+    const refP = ref(db, `rooms/${roomCode}/players/${playerName}`);
+    const snap = await get(refP);
+    let score = snap.val().score;
+    await update(refP, { score: score + 1 });
+  }
+
+  nextQuestion();
+};
+
+/* NEXT (leaderboard shows 5 sec) */
+function nextQuestion() {
+  document.getElementById("leaderboardCard").style.display = "block";
+
+  setTimeout(() => {
+    document.getElementById("leaderboardCard").style.display = "none";
+
+    qIndex++;
+
+    if (qIndex >= questions.length) {
+      document.getElementById("game").innerHTML =
+        "<div class='card'><h2>Game Over 🎉</h2></div>";
+      return;
+    }
+
+    loadQuestion();
+  }, 5000);
+}
+
+/* LEAVE */
+window.leaveGame = async function () {
+  await remove(ref(db, `rooms/${roomCode}/players/${playerName}`));
+  location.reload();
+};
 
 </script>
 
