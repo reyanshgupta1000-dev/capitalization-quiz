@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Capitalization Battle (Final Submission)</title>
+  <title>Capitalization Battle Pro</title>
 
   <style>
     body {
@@ -86,62 +86,75 @@
 
   <h1>🔥 Capitalization Battle Pro</h1>
 
-  <!-- RULES (REQUIREMENT EXPLICIT) -->
+  <!-- 🔥 ENGLISH REQUIREMENTS (IMPORTANT FOR GRADING) -->
   <div class="card">
-    <h2>Game Rules (English Assignment Requirement)</h2>
+    <h2>📘 English Assignment Requirements</h2>
+
     <p><b>Grammar Skill:</b> Capitalization</p>
-    <p>Players join a room and answer grammar questions.</p>
-    <p>Each correct answer = +1 point.</p>
-    <p>Wrong answers = 0 points (no penalty, just no score).</p>
-    <p>Game is won by the highest score at the end.</p>
-    <p>If you make a mistake, you do NOT lose points, but you miss scoring opportunities.</p>
-    <p>This game lasts about 10–20 minutes.</p>
+
+    <p><b>Learning Goal:</b> Learn correct use of capital letters in sentences, names, and places.</p>
+
+    <p><b>Rules:</b></p>
+    <ul style="text-align:left;">
+      <li>Join a game using a room code</li>
+      <li>Host starts the game</li>
+      <li>Each correct answer = 1 point</li>
+      <li>Wrong answers = no points lost</li>
+      <li>Highest score wins</li>
+    </ul>
+
+    <p><b>What happens if you make a mistake?</b><br>
+    You don’t lose points, but you miss scoring opportunities.</p>
+
+    <p><b>How to win:</b> Get the highest score after all questions.</p>
+
+    <p><b>Time:</b> 10–20 minutes gameplay</p>
+    <p><b>Includes:</b> 15+ capitalization practice questions</p>
   </div>
 
-  <!-- LEARNING GOAL -->
+  <!-- REFLECTION -->
   <div class="card">
-    <h2>What You Are Learning</h2>
-    <p>This game teaches capitalization rules in English writing.</p>
-    <p>You learn to capitalize:</p>
-    <p>- Names of people</p>
-    <p>- Places (cities, countries)</p>
-    <p>- The first word in a sentence</p>
-  </div>
-
-  <!-- REFLECTION (FULL REQUIREMENT) -->
-  <div class="card">
-    <h2>Reflection Letter (To Future Students)</h2>
+    <h2>📝 Reflection Letter</h2>
 
     <p>
-      This game is designed to help you practice capitalization, which is an important grammar skill in English.
-      Capitalization helps writing look clear, correct, and professional.
+      This game helps you practice capitalization, which is an important grammar skill in English writing.
+      Capitalization makes writing clearer, more correct, and more professional.
     </p>
 
     <p>
-      I think this skill is important because without it, sentences can be confusing or look incorrect even if the idea is good.
-      In school, writing with correct capitalization makes your work easier to understand and more professional.
+      This skill is important because without it, writing can be confusing even if the ideas are good.
+      It helps readers understand where sentences begin and which words are important.
     </p>
 
     <p>
-      My advice is to always slow down when writing and check the first letter of every sentence.
-      Also remember to capitalize names of people, countries, cities, and important places.
-      One thing I wish I knew earlier is that small capitalization mistakes can affect your grade even if everything else is correct.
+      My advice is to always slow down when writing and check the first letter of sentences, names of people,
+      cities, and countries. One thing I wish I knew earlier is that small capitalization mistakes can still affect grades.
     </p>
 
     <p>
-      Tip for mastering this skill: practice reading sentences and circling capital letters in your head before writing.
-      The more you practice, the more automatic it becomes.
+      A good tip is to practice spotting capital letters while reading, so it becomes automatic when writing.
     </p>
   </div>
 
   <!-- SETUP -->
   <div id="setup" class="card">
-    <h2>Join Multiplayer Game</h2>
+    <h2>Join / Create Game</h2>
     <input id="name" placeholder="Your name">
     <input id="room" placeholder="Room code">
     <br>
     <button onclick="createGame()">Create Game (Host)</button>
     <button onclick="joinRoom()">Join Game</button>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="lobby" class="card" style="display:none;">
+    <h2>Lobby</h2>
+
+    <button id="startBtn" onclick="startGame()" style="display:none;">
+      Start Game (Host Only)
+    </button>
+
+    <div id="players"></div>
   </div>
 
   <!-- GAME -->
@@ -156,7 +169,7 @@
     </div>
 
     <div class="card" id="leaderboardCard">
-      <h3>Leaderboard (Shows after each question)</h3>
+      <h3>Leaderboard</h3>
       <div id="board"></div>
     </div>
 
@@ -164,13 +177,13 @@
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set, get, update, onValue, remove }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -184,7 +197,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* 15+ QUESTIONS */
+/* QUESTIONS (15+) */
 const questions = [
   { q: "Which is correct?", a1: "i went to london", a2: "I went to London", correct: 1 },
   { q: "Which is correct?", a1: "my name is alex", a2: "My name is Alex", correct: 1 },
@@ -203,7 +216,9 @@ const questions = [
   { q: "Which is correct?", a1: "i play soccer", a2: "I play soccer", correct: 1 }
 ];
 
-let playerName, roomCode, isHost = false;
+let playerName = "";
+let roomCode = "";
+let hostName = "";
 let qIndex = 0;
 let timer;
 
@@ -211,15 +226,15 @@ let timer;
 window.createGame = async function () {
   playerName = document.getElementById("name").value;
   roomCode = document.getElementById("room").value;
-  isHost = true;
+  hostName = playerName;
 
   await set(ref(db, `rooms/${roomCode}`), {
     host: playerName,
-    state: "lobby",
-    current: 0
+    state: "lobby"
   });
 
   joinRoom();
+  document.getElementById("startBtn").style.display = "block";
 };
 
 /* JOIN */
@@ -232,18 +247,27 @@ window.joinRoom = async function () {
   });
 
   document.getElementById("setup").style.display = "none";
+  document.getElementById("lobby").style.display = "block";
   document.getElementById("roomDisplay").innerText = roomCode;
 
   listenRoom();
   listenPlayers();
 };
 
-/* ROOM LISTENER */
+/* ROOM */
 function listenRoom() {
   onValue(ref(db, `rooms/${roomCode}`), (snap) => {
     const data = snap.val();
+    if (!data) return;
 
-    if (data?.state === "playing") {
+    hostName = data.host;
+
+    if (playerName === hostName) {
+      document.getElementById("startBtn").style.display = "block";
+    }
+
+    if (data.state === "playing") {
+      document.getElementById("lobby").style.display = "none";
       document.getElementById("game").style.display = "block";
       loadQuestion();
     }
@@ -257,12 +281,31 @@ function listenPlayers() {
     let html = "";
 
     for (let p in data) {
-      html += `<p><b>${p}</b>: ${data[p].score}</p>`;
+      html += `
+        <p>
+          <b>${p}</b>: ${data[p].score}
+          ${playerName === hostName ? `<button onclick="kick('${p}')">Kick</button>` : ""}
+        </p>
+      `;
     }
 
-    document.getElementById("board").innerHTML = html;
+    document.getElementById("players").innerHTML = html;
   });
 }
+
+/* KICK */
+window.kick = async function (name) {
+  await remove(ref(db, `rooms/${roomCode}/players/${name}`));
+};
+
+/* START */
+window.startGame = async function () {
+  if (playerName !== hostName) return;
+
+  await update(ref(db, `rooms/${roomCode}`), {
+    state: "playing"
+  });
+};
 
 /* QUESTION */
 function loadQuestion() {
@@ -283,7 +326,6 @@ function startTimer() {
   timer = setInterval(() => {
     t--;
     document.getElementById("timer").innerText = t;
-
     if (t <= 0) nextQuestion();
   }, 1000);
 }
@@ -293,16 +335,16 @@ window.answer = async function (choice) {
   const q = questions[qIndex];
 
   if (choice === q.correct) {
-    const refP = ref(db, `rooms/${roomCode}/players/${playerName}`);
-    const snap = await get(refP);
+    const r = ref(db, `rooms/${roomCode}/players/${playerName}`);
+    const snap = await get(r);
     let score = snap.val().score;
-    await update(refP, { score: score + 1 });
+    await update(r, { score: score + 1 });
   }
 
   nextQuestion();
 };
 
-/* NEXT (leaderboard shows 5 sec) */
+/* NEXT */
 function nextQuestion() {
   document.getElementById("leaderboardCard").style.display = "block";
 
@@ -320,12 +362,6 @@ function nextQuestion() {
     loadQuestion();
   }, 5000);
 }
-
-/* LEAVE */
-window.leaveGame = async function () {
-  await remove(ref(db, `rooms/${roomCode}/players/${playerName}`));
-  location.reload();
-};
 
 </script>
 
