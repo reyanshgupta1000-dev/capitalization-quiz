@@ -1,40 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Multiplayer Quiz</title>
-  <style>
-    body {
-      font-family: Arial;
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-    }
-  </style>
+  <title>Quiz Game</title>
 </head>
 <body>
 
-<h1>Capitalization Quiz (Multiplayer)</h1>
+<h1>Quiz Multiplayer Test</h1>
 
-<div id="setup">
-  <input id="name" placeholder="Enter name">
-  <input id="room" placeholder="Enter room code">
-  <button onclick="joinRoom()">Join Game</button>
-</div>
+<input id="name" placeholder="Name">
+<input id="room" placeholder="Room code">
 
-<div id="game" style="display:none;">
-  <h2>Joined Room!</h2>
-</div>
+<button id="joinBtn">Join Game</button>
+
+<p id="status"></p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-// 🔥 YOUR FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCBEGw6J76suo9BHgUD1GIiiZbp4ifqJ3E",
   authDomain: "quiz-game-9aa86.firebaseapp.com",
@@ -48,31 +32,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 🌐 JOIN FUNCTION
-window.joinRoom = async function () {
+async function joinRoom() {
   const name = document.getElementById("name").value;
   const room = document.getElementById("room").value;
 
+  document.getElementById("status").innerText = "Button clicked";
+
   if (!name || !room) {
-    alert("Enter name and room code");
+    alert("Enter name and room");
     return;
   }
 
-  try {
-    await set(ref(db, `rooms/${room}/players/${name}`), {
-      score: 0
-    });
+  await set(ref(db, `rooms/${room}/players/${name}`), {
+    score: 0
+  });
 
-    alert("Joined room: " + room);
+  document.getElementById("status").innerText = "Joined " + room;
+}
 
-    document.getElementById("setup").style.display = "none";
-    document.getElementById("game").style.display = "block";
-
-  } catch (err) {
-    console.error(err);
-    alert("Error joining room");
-  }
-};
+document.getElementById("joinBtn").addEventListener("click", joinRoom);
 </script>
 
 </body>
