@@ -86,46 +86,37 @@
 
   <h1>🔥 Capitalization Battle Pro</h1>
 
-  <!-- 📘 ENGLISH REQUIREMENTS (UPDATED - RULES REMOVED AS REQUESTED) -->
+  <!-- ENGLISH REQUIREMENTS -->
   <div class="card">
     <h2>📘 English Assignment Requirements</h2>
 
     <p><b>Grammar Skill:</b> Capitalization</p>
 
-    <p><b>Learning Goal:</b> Learn correct use of capital letters in sentences, names, and places.</p>
+    <p><b>What it teaches:</b> Correct use of capital letters in sentences, names, and places.</p>
 
-    <p><b>What happens if you make a mistake?</b><br>
-    You don’t lose points, but you miss scoring opportunities.</p>
+    <p><b>Why it matters:</b> Improves clarity, readability, and writing quality.</p>
 
-    <p><b>How to win:</b><br>
-    The player with the highest score after all questions wins the game.</p>
+    <p><b>Goal:</b> Practice capitalization automatically while writing.</p>
 
-    <p><b>Time:</b> 10–20 minutes gameplay</p>
-    <p><b>Includes:</b> 15+ capitalization practice questions</p>
+    <p><b>What happens if you make a mistake?</b> You don’t lose points, but you miss scoring chances.</p>
+
+    <p><b>How to win:</b> Highest score after all questions wins.</p>
+
+    <p><b>Time:</b> 10–20 minutes</p>
+    <p><b>Includes:</b> 15+ questions</p>
   </div>
 
   <!-- REFLECTION -->
   <div class="card">
     <h2>📝 Reflection Letter</h2>
 
-    <p>
-      This game helps you practice capitalization, which is an important grammar skill in English writing.
-      Capitalization makes writing clearer, more correct, and more professional.
-    </p>
+    <p>This game teaches capitalization, which is important in English writing.</p>
 
-    <p>
-      This skill is important because without it, writing can be confusing even if the ideas are good.
-      It helps readers understand where sentences begin and which words are important.
-    </p>
+    <p>Capital letters help make writing clear and professional.</p>
 
-    <p>
-      My advice is to always slow down and check the first letter of sentences, names of people,
-      cities, and countries. One thing I wish I knew earlier is that small capitalization mistakes can still affect grades.
-    </p>
+    <p>You should always check sentence beginnings and proper nouns like names and places.</p>
 
-    <p>
-      A good tip is to practice spotting capital letters while reading so it becomes automatic when writing.
-    </p>
+    <p>Practice by reading carefully and noticing capital letters in real texts.</p>
   </div>
 
   <!-- SETUP -->
@@ -213,7 +204,7 @@ let hostName = "";
 let qIndex = 0;
 let timer;
 
-/* CREATE */
+/* CREATE GAME (FIXED) */
 window.createGame = async function () {
   playerName = document.getElementById("name").value;
   roomCode = document.getElementById("room").value;
@@ -224,28 +215,47 @@ window.createGame = async function () {
     state: "lobby"
   });
 
-  joinRoom();
-  document.getElementById("startBtn").style.display = "block";
+  await set(ref(db, `rooms/${roomCode}/players/${playerName}`), {
+    score: 0
+  });
+
+  enterLobby();
 };
 
-/* JOIN */
+/* JOIN GAME */
 window.joinRoom = async function () {
   playerName = document.getElementById("name").value;
   roomCode = document.getElementById("room").value;
+
+  const roomSnap = await get(ref(db, `rooms/${roomCode}`));
+  const roomData = roomSnap.val();
+
+  if (!roomData) return alert("Room does not exist");
+
+  hostName = roomData.host;
 
   await set(ref(db, `rooms/${roomCode}/players/${playerName}`), {
     score: 0
   });
 
+  enterLobby();
+};
+
+/* ENTER LOBBY (FIX) */
+function enterLobby() {
   document.getElementById("setup").style.display = "none";
   document.getElementById("lobby").style.display = "block";
   document.getElementById("roomDisplay").innerText = roomCode;
 
+  if (playerName === hostName) {
+    document.getElementById("startBtn").style.display = "block";
+  }
+
   listenRoom();
   listenPlayers();
-};
+}
 
-/* ROOM */
+/* ROOM LISTENER */
 function listenRoom() {
   onValue(ref(db, `rooms/${roomCode}`), (snap) => {
     const data = snap.val();
@@ -272,24 +282,14 @@ function listenPlayers() {
     let html = "";
 
     for (let p in data) {
-      html += `
-        <p>
-          <b>${p}</b>: ${data[p].score}
-          ${playerName === hostName ? `<button onclick="kick('${p}')">Kick</button>` : ""}
-        </p>
-      `;
+      html += `<p><b>${p}</b>: ${data[p].score}</p>`;
     }
 
     document.getElementById("players").innerHTML = html;
   });
 }
 
-/* KICK */
-window.kick = async function (name) {
-  await remove(ref(db, `rooms/${roomCode}/players/${name}`));
-};
-
-/* START */
+/* START GAME */
 window.startGame = async function () {
   if (playerName !== hostName) return;
 
@@ -298,7 +298,7 @@ window.startGame = async function () {
   });
 };
 
-/* GAME LOGIC */
+/* GAME */
 function loadQuestion() {
   const q = questions[qIndex];
 
